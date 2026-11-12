@@ -1,0 +1,121 @@
+
+-- =====================================================
+-- RETAIL INTELLIGENCE
+-- Retail Sales and Profitability Analysis
+-- Database: PostgreSQL
+-- Dataset: Sample Superstore
+-- =====================================================
+
+
+-- 1. OVERALL BUSINESS PERFORMANCE
+-- Evaluates total sales, profit, orders, and profit margin.
+
+SELECT
+    COUNT(*) AS total_records,
+    COUNT(DISTINCT "Order ID") AS total_orders,
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(
+        SUM("Profit") / NULLIF(SUM("Sales"), 0) * 100,
+        2
+    ) AS profit_margin
+FROM superstore;
+
+
+-- 2. CATEGORY PERFORMANCE
+-- Compares sales, profit, and margin across categories.
+
+SELECT
+    "Category",
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(
+        SUM("Profit") / NULLIF(SUM("Sales"), 0) * 100,
+        2
+    ) AS profit_margin
+FROM superstore
+GROUP BY "Category"
+ORDER BY total_profit DESC;
+
+
+-- 3. SUBCATEGORY PROFITABILITY
+-- Identifies the most and least profitable subcategories.
+
+SELECT
+    "Sub-Category",
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(
+        SUM("Profit") / NULLIF(SUM("Sales"), 0) * 100,
+        2
+    ) AS profit_margin
+FROM superstore
+GROUP BY "Sub-Category"
+ORDER BY total_profit ASC;
+
+
+-- 4. LOSS-MAKING SUBCATEGORIES
+-- Examines the financial impact of negative-profit subcategories.
+
+SELECT
+    "Sub-Category",
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(
+        SUM("Profit") / NULLIF(SUM("Sales"), 0) * 100,
+        2
+    ) AS profit_margin
+FROM superstore
+WHERE "Sub-Category" IN ('Tables', 'Bookcases', 'Supplies')
+GROUP BY "Sub-Category"
+ORDER BY total_profit ASC;
+
+
+-- 5. REGIONAL PROFITABILITY
+-- Compares regional performance for the three loss-making subcategories.
+
+SELECT
+    "Region",
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(
+        SUM("Profit") / NULLIF(SUM("Sales"), 0) * 100,
+        2
+    ) AS profit_margin
+FROM superstore
+WHERE "Sub-Category" IN ('Tables', 'Bookcases', 'Supplies')
+GROUP BY "Region"
+ORDER BY total_profit DESC;
+
+
+-- 6. TOP 10 LOSS-MAKING PRODUCTS
+-- Identifies products with the greatest total dollar losses.
+
+SELECT
+    "Product Name",
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(AVG("Discount") * 100, 2) AS avg_discount_pct
+FROM superstore
+GROUP BY "Product Name"
+HAVING SUM("Profit") < 0
+ORDER BY total_profit ASC
+LIMIT 10;
+
+
+-- 7. FIVE PRODUCTS WITH THE WORST PROFIT MARGINS
+-- Identifies products with the lowest profit relative to sales.
+
+SELECT
+    "Product Name",
+    ROUND(SUM("Sales"), 2) AS total_sales,
+    ROUND(SUM("Profit"), 2) AS total_profit,
+    ROUND(
+        SUM("Profit") / NULLIF(SUM("Sales"), 0) * 100,
+        2
+    ) AS profit_margin
+FROM superstore
+GROUP BY "Product Name"
+HAVING SUM("Sales") > 0
+ORDER BY profit_margin ASC
+LIMIT 5;
