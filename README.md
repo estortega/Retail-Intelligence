@@ -6,6 +6,10 @@ This project analyzes the Sample Superstore retail dataset to evaluate business 
 
 Using PostgreSQL, Python, and Microsoft Excel, I explored sales trends, product performance, category profitability, and regional differences to translate transactional data into actionable business insights.
 
+## Executive Dashboard
+
+![Retail Intelligence Executive Dashboard](images/retail_dashboard.png)
+
 ## Business Objectives
 
 - Evaluate overall sales and profitability.
